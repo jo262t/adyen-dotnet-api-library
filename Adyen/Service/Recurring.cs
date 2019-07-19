@@ -1,13 +1,14 @@
 ﻿using Adyen.Model.Recurring;
 using Adyen.Service.Resource.Recurring;
 using System;
+using System.Threading.Tasks;
 
 namespace Adyen.Service
 {
     public class Recurring : AbstractService
     {
         private readonly ListRecurringDetails _listRecurringDetails;
-        private Disable _disable;
+        private readonly Disable _disable;
 
         public Recurring(Client client) : base(client)
         {
@@ -17,35 +18,35 @@ namespace Adyen.Service
 
         public RecurringDetailsResult ListRecurringDetails(RecurringDetailsRequest request)
         {
-            RecurringDetailsResult result = null;
-            try
-            {
-                var jsonRequest = Util.JsonOperation.SerializeRequest(request);
-                var jsonResponse = _listRecurringDetails.Request(jsonRequest);
-                result = Util.JsonOperation.Deserialize<RecurringDetailsResult>(jsonResponse);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return result;
+            var jsonRequest = Util.JsonOperation.SerializeRequest(request);
+            var jsonResponse = _listRecurringDetails.Request(jsonRequest);
+            
+            return Util.JsonOperation.Deserialize<RecurringDetailsResult>(jsonResponse);
+        }
 
+        public async Task<RecurringDetailsResult> ListRecurringDetailsAsync(RecurringDetailsRequest request)
+        {
+            var jsonRequest = Util.JsonOperation.SerializeRequest(request);
+            var jsonResponse = await _listRecurringDetails.RequestAsync(jsonRequest);
+
+            return Util.JsonOperation.Deserialize<RecurringDetailsResult>(jsonResponse);
         }
 
         public DisableResult Disable(DisableRequest disableRequest)
         {
-            DisableResult result = null;
-            try
-            {
-                var jsonRequest = Util.JsonOperation.SerializeRequest(disableRequest);
-                var jsonResponse = _disable.Request(jsonRequest);
-                result = Util.JsonOperation.Deserialize<DisableResult>(jsonResponse);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return result;
+            var jsonRequest = Util.JsonOperation.SerializeRequest(disableRequest);
+            var jsonResponse = _disable.Request(jsonRequest);
+
+            return Util.JsonOperation.Deserialize<DisableResult>(jsonResponse);
         } 
+
+        public async Task<DisableResult> DisableAsync(DisableRequest disableRequest)
+        {
+            var jsonRequest = Util.JsonOperation.SerializeRequest(disableRequest);
+            var jsonResponse = await _disable.RequestAsync(jsonRequest);
+
+            return Util.JsonOperation.Deserialize<DisableResult>(jsonResponse);
+        } 
+
     }
 }

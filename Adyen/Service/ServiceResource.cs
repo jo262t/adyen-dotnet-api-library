@@ -1,8 +1,7 @@
-using System;
+using Adyen.Model;
 using System.Collections.Generic;
 using System.Net.Security;
 using System.Threading.Tasks;
-using Adyen.Model;
 
 namespace Adyen.Service
 {

@@ -1,62 +1,72 @@
-﻿using System;
-using Adyen.HttpClient;
+﻿using Adyen.HttpClient;
 using Adyen.Model.Enum;
 using Adyen.Model.Recurring;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Threading.Tasks;
 using Recurring = Adyen.Model.Recurring.Recurring;
 
 namespace Adyen.Test
 {
     [TestClass]
-    public class RecurringTest:BaseTest
+    public class RecurringTest : BaseTest
     {
 
-        [TestMethod]
-        public void TestListRecurringDetails()
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task TestListRecurringDetails(bool runAsync)
         {
             var client = base.CreateMockTestClientRecurringRequest("Mocks/recurring/listRecurringDetails-success.json");
-            var recurring=new Service.Recurring(client);
+            var recurring = new Service.Recurring(client);
             var recurringDetailsRequest = this.CreateRecurringDetailsRequest();
-            var recurringDetailsResult = recurring.ListRecurringDetails(recurringDetailsRequest);
+
+            var recurringDetailsResult = runAsync ?
+                await recurring.ListRecurringDetailsAsync(recurringDetailsRequest)
+                : recurring.ListRecurringDetails(recurringDetailsRequest);
+
             Assert.AreEqual(1L, (long)recurringDetailsResult.Details.Count);
-            var recurringDetail = recurringDetailsResult.Details.FirstOrDefault().RecurringDetail;
-            Assert.AreEqual("recurringReference", recurringDetail.RecurringDetailReference);
-            Assert.AreEqual("cardAlias", recurringDetail.Alias);
-            Assert.AreEqual("1111", recurringDetail.Card.Number);
+
+            var recurringDetail = recurringDetailsResult.Details.FirstOrDefault()?.RecurringDetail;
+            Assert.AreEqual("recurringReference", recurringDetail?.RecurringDetailReference);
+            Assert.AreEqual("cardAlias", recurringDetail?.Alias);
+            Assert.AreEqual("1111", recurringDetail?.Card.Number);
         }
 
-        [TestMethod]
-        public void TestDisable()
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task TestDisable(bool runAsync)
         {
             var client = base.CreateMockTestClientRecurringRequest("Mocks/recurring/disable-success.json");
             var recurring = new Service.Recurring(client);
             var disableRequest = this.CreateDisableRequest();
-            var disableResult = recurring.Disable(disableRequest);
+            
+            var disableResult = runAsync ? 
+                await recurring.DisableAsync(disableRequest)
+                : recurring.Disable(disableRequest);
+
             Assert.AreEqual(1L, (long)disableResult.Details.Count);
             Assert.AreEqual("[detail-successfully-disabled]", disableResult.Response);
         }
 
-
-
-        [TestMethod]
-        public void TestDisable803()
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task TestDisable803(bool runAsync)
         {
-            try
-            {
-                var client = base.CreateMockTestClientForErrors(422,"Mocks/recurring/disable-error-803.json");
-                var recurring = new Service.Recurring(client);
-                var disableRequest = this.CreateDisableRequest();
+            var client = base.CreateMockTestClientForErrors(422,"Mocks/recurring/disable-error-803.json");
+            var recurring = new Service.Recurring(client);
+            
+            var disableRequest = this.CreateDisableRequest();
 
-                var disableResult = recurring.Disable(disableRequest);
-                Assert.Fail("Exception expected!");
-            }
-            catch (Exception exception)
-            {
-                Assert.AreNotEqual(200, exception);
-             
-            }
-           
+            var exception = runAsync ?
+                    await Assert.ThrowsExceptionAsync<HttpClientException>(async () =>
+                        await recurring.DisableAsync(disableRequest))
+                : Assert.ThrowsException<HttpClientException>(() => recurring.Disable(disableRequest)); 
+
+            Assert.AreEqual(422, exception.Code);
+            Assert.AreEqual("An error occured", exception.Message);
         }
 
         private RecurringDetailsRequest CreateRecurringDetailsRequest()

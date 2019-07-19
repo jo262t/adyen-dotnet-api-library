@@ -16,7 +16,7 @@ namespace Adyen.Util
         }
 
         /// <summary>
-        /// Deseralize to a dynamic object
+        /// Deserialize to a dynamic object
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>

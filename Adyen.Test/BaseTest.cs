@@ -1,5 +1,7 @@
 ﻿using Adyen.Constants;
 using Adyen.HttpClient;
+using Adyen.HttpClient.Interfaces;
+using Adyen.Model;
 using Adyen.Model.Modification;
 using Adyen.Model.Nexo;
 using Adyen.Service;
@@ -10,10 +12,8 @@ using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Text;
-using Adyen.HttpClient.Interfaces;
-using Adyen.Model;
-using Environment = System.Environment;
 using Amount = Adyen.Model.Amount;
+using Environment = System.Environment;
 using PaymentResult = Adyen.Model.PaymentResult;
 
 namespace Adyen.Test
@@ -219,16 +219,24 @@ namespace Adyen.Test
         {
             var mockPath = GetMockFilePath(fileName);
             var response = MockFileToString(mockPath);
+
             //Create a mock interface
             var clientInterfaceMock = new Mock<IClient>();
             var confMock = MockPaymentData.CreateConfingMock();
            
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(), It.IsAny<string>(), confMock)).Returns(response);
+            clientInterfaceMock.Setup(x => x.RequestAsync(It.IsAny<string>(), 
+                It.IsAny<string>(), 
+                confMock, 
+                It.IsAny<bool>(), 
+                It.IsAny<RequestOptions>())).ReturnsAsync(response);
+
             var clientMock = new Client(It.IsAny<Config>())
             {
                 HttpClient = clientInterfaceMock.Object,
                 Config = confMock
             };
+            
             return clientMock;
         }
         
@@ -286,6 +294,7 @@ namespace Adyen.Test
             var config = new Config { Endpoint = @"https://_terminal_:8443/nexo/" };
             var mockPath = GetMockFilePath(fileName);
             var response = MockFileToString(mockPath);
+
             //Create a mock interface
             var clientInterfaceMock = new Mock<IClient>();
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),
@@ -342,6 +351,9 @@ namespace Adyen.Test
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),
                 It.IsAny<string>(), confMock)).Throws(httpClientException);
 
+            clientInterfaceMock.Setup(x => x.RequestAsync(It.IsAny<string>(),
+                It.IsAny<string>(), confMock, It.IsAny<bool>(), It.IsAny<RequestOptions>())).Throws(httpClientException);
+
             var clientMock = new Client(It.IsAny<Config>())
             {
                 HttpClient = clientInterfaceMock.Object,
@@ -352,22 +364,16 @@ namespace Adyen.Test
 
         protected string MockFileToString(string fileName)
         {
-            string text = "";
+            var text = string.Empty;
 
-            if (String.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(fileName))
             {
                 return text;
             }
-            try
+           
+            using (var streamReader = new StreamReader(fileName, Encoding.UTF8))
             {
-                using (var streamReader = new StreamReader(fileName, Encoding.UTF8))
-                {
-                    text = streamReader.ReadToEnd();
-                }
-            }
-            catch (Exception exception)
-            {
-                throw exception;
+                text = streamReader.ReadToEnd();
             }
 
             return text;

@@ -1,4 +1,6 @@
 ﻿using Adyen.Constants;
+using Adyen.HttpClient.Interfaces;
+using Adyen.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,8 +9,6 @@ using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Adyen.HttpClient.Interfaces;
-using Adyen.Model;
 
 namespace Adyen.HttpClient
 {
@@ -16,7 +16,7 @@ namespace Adyen.HttpClient
     {
         private readonly Encoding _encoding = Encoding.ASCII;
 
-        public string Request(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null , RemoteCertificateValidationCallback certificateValidationCallback=null)
+        public string Request(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null, RemoteCertificateValidationCallback certificateValidationCallback = null)
         {
             string responseText = null;
             var httpWebRequest = GetHttpWebRequest(endpoint, config, isApiKeyRequired, requestOptions , certificateValidationCallback);
@@ -86,6 +86,7 @@ namespace Adyen.HttpClient
             }
             return responseText;
         }
+
         public string Request(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null)
         {
             return this.Request(endpoint, json, config, isApiKeyRequired,requestOptions, null);
