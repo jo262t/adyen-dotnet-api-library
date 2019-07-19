@@ -252,8 +252,13 @@ namespace Adyen.Test
             //Create a mock interface
             var clientInterfaceMock = new Mock<IClient>();
             var confMock = MockPaymentData.CreateConfingApiKeyBasedMock();
+            
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>())).Returns(response);
+
+            clientInterfaceMock.Setup(x => x.RequestAsync(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>())).ReturnsAsync(response);
+
             var clientMock = new Client(It.IsAny<Config>())
             {
                 HttpClient = clientInterfaceMock.Object,

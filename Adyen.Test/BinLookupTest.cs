@@ -1,16 +1,18 @@
 ﻿using Adyen.Model.BinLookup;
 using Adyen.Model.Enum;
 using Adyen.Service;
-using Adyen.Service.Resource.BinLookup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Adyen.Test
 {
     [TestClass]
     public class BinLookupTest : BaseTest
     {
-        [TestMethod]
-        public void Get3dsAvailabilitySuccessMockedTest()
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task Get3dsAvailabilitySuccessMockedTest(bool runAsync)
         {
             var client = CreateMockTestClientApiKeyBasedRequest("Mocks/binlookup/get3dsavailability-success.json");
             var binLookup = new BinLookup(client);
@@ -19,14 +21,20 @@ namespace Adyen.Test
                 MerchantAccount = "merchantAccount",
                 CardNumber = "4111111111111111"
             };
-            var threeDsAvailabilityResponse = binLookup.ThreeDsAvailability(threeDsAvailabilityRequest);
+
+            var threeDsAvailabilityResponse = runAsync ?
+                await binLookup.ThreeDsAvailabilityAsync(threeDsAvailabilityRequest)
+                : binLookup.ThreeDsAvailability(threeDsAvailabilityRequest);
+
             Assert.AreEqual("visa", threeDsAvailabilityResponse.DsPublicKeys[0].Brand);
             Assert.AreEqual("visa", threeDsAvailabilityResponse.ThreeDS2CardRangeDetails[0].BrandCode);
             Assert.AreEqual(true, threeDsAvailabilityResponse.ThreeDS1Supported);
         }
 
-        [TestMethod]
-        public void GetCostEstimateSuccessMockedTest()
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task GetCostEstimateSuccessMockedTest(bool runAsync)
         {
             var client = CreateMockTestClientApiKeyBasedRequest("Mocks/binlookup/getcostestimate-success.json");
             var binLookup = new BinLookup(client);
@@ -53,7 +61,11 @@ namespace Adyen.Test
             };
             costEstimateRequest.MerchantDetails = (merchantDetails);
             costEstimateRequest.ShopperInteraction = ShopperInteraction.Ecommerce;
-            var costEstimateResponse = binLookup.CostEstimate(costEstimateRequest);
+
+            var costEstimateResponse = runAsync ?
+                await binLookup.CostEstimateAsync(costEstimateRequest)
+                : binLookup.CostEstimate(costEstimateRequest);
+
             Assert.AreEqual("1111", costEstimateResponse.CardBin.Summary);
             Assert.AreEqual("Unsupported", costEstimateResponse.ResultCode);
             Assert.AreEqual("ZERO", costEstimateResponse.SurchargeType);
