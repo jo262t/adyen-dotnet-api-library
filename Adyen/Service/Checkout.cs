@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Adyen.Model;
+﻿using Adyen.Model;
 using Adyen.Model.Checkout;
 using Adyen.Service.Resource.Checkout;
 using Newtonsoft.Json;
@@ -11,11 +8,11 @@ namespace Adyen.Service
 {
     public class Checkout : AbstractService
     {
-        private Payments _payments;
-        private PaymentMethods _paymentMethods;
-        private PaymentDetails _paymentDetails;
-        private PaymentSession _paymentSession;
-        private PaymentsResult _paymentsResult;
+        private readonly Payments _payments;
+        private readonly PaymentMethods _paymentMethods;
+        private readonly PaymentDetails _paymentDetails;
+        private readonly PaymentSession _paymentSession;
+        private readonly PaymentsResult _paymentsResult;
 
         public Checkout(Client client) : base(client)
         {

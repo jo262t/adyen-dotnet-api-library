@@ -211,7 +211,6 @@ namespace Adyen.Test
         }
 
         [TestMethod]
-
         public void ApplicationInfoTest()
         {
             ApplicationInfo applicationInfo = new ApplicationInfo();

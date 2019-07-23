@@ -55,7 +55,7 @@ namespace Adyen.HttpClient
             }
             return responseText;
         }
-
+        
         /// <summary>
         /// HttpWebRequest asynchronous. 
         /// </summary>
@@ -64,8 +64,9 @@ namespace Adyen.HttpClient
         /// <param name="config"></param>
         /// <param name="isApiKeyRequired"></param>
         /// <param name="requestOptions">Optional parameter used to specify the options for the request</param>
+        /// <param name="certificateValidationCallback"></param>
         /// <returns>Task<string></returns>
-        public async Task<string> RequestAsync(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null)
+        public async Task<string> RequestAsync(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null, RemoteCertificateValidationCallback certificateValidationCallback = null)
         {
             string responseText;
             //Set security protocol. Only TLS1.2
@@ -85,11 +86,6 @@ namespace Adyen.HttpClient
                 }
             }
             return responseText;
-        }
-
-        public string Request(string endpoint, string json, Config config, bool isApiKeyRequired, RequestOptions requestOptions = null)
-        {
-            return this.Request(endpoint, json, config, isApiKeyRequired,requestOptions, null);
         }
 
         [Obsolete("This is deprecated functionality by Adyen. Correct use request method with isApiKeyRequired parameter.")]
@@ -147,6 +143,7 @@ namespace Adyen.HttpClient
             }
             return httpWebRequest;
         }
+        
         public static string QueryString(IDictionary<string, string> dict)
         {
             var list = new List<string>();

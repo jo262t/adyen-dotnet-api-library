@@ -201,7 +201,7 @@ namespace Adyen.Test
             var clientInterfaceMock = new Mock<IClient>();
             var confMock = MockPaymentData.CreateConfingMock();
            
-            clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),  It.IsAny<string>(), confMock, It.IsAny<bool>(), It.IsAny<RequestOptions>())).Returns(response);
+            clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),  It.IsAny<string>(), confMock, It.IsAny<bool>(), It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).Returns(response);
             var clientMock = new Client(It.IsAny<Config>())
             {
                 HttpClient = clientInterfaceMock.Object,
@@ -229,7 +229,7 @@ namespace Adyen.Test
                 It.IsAny<string>(), 
                 confMock, 
                 It.IsAny<bool>(), 
-                It.IsAny<RequestOptions>())).ReturnsAsync(response);
+                It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).ReturnsAsync(response);
 
             var clientMock = new Client(It.IsAny<Config>())
             {
@@ -254,10 +254,10 @@ namespace Adyen.Test
             var confMock = MockPaymentData.CreateConfingApiKeyBasedMock();
             
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>())).Returns(response);
+                It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).Returns(response);
 
             clientInterfaceMock.Setup(x => x.RequestAsync(It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>())).ReturnsAsync(response);
+                It.IsAny<string>(), It.IsAny<Config>(),It.IsAny<bool>(), It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).ReturnsAsync(response);
 
             var clientMock = new Client(It.IsAny<Config>())
             {
@@ -280,7 +280,7 @@ namespace Adyen.Test
             //Create a mock interface
             var clientInterfaceMock = new Mock<IClient>();
             clientInterfaceMock.Setup(x => x.Request(It.IsAny<string>(),
-                It.IsAny<string>(), config,It.IsAny<bool>(), It.IsAny<RequestOptions>())).Returns(response);
+                It.IsAny<string>(), config,It.IsAny<bool>(), It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).Returns(response);
             var clientMock = new Client(It.IsAny<Config>())
             {
                 HttpClient = clientInterfaceMock.Object,
@@ -357,7 +357,7 @@ namespace Adyen.Test
                 It.IsAny<string>(), confMock)).Throws(httpClientException);
 
             clientInterfaceMock.Setup(x => x.RequestAsync(It.IsAny<string>(),
-                It.IsAny<string>(), confMock, It.IsAny<bool>(), It.IsAny<RequestOptions>())).Throws(httpClientException);
+                It.IsAny<string>(), confMock, It.IsAny<bool>(), It.IsAny<RequestOptions>(), It.IsAny<RemoteCertificateValidationCallback>())).Throws(httpClientException);
 
             var clientMock = new Client(It.IsAny<Config>())
             {

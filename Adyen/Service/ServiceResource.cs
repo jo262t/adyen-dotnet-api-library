@@ -23,6 +23,13 @@ namespace Adyen.Service
             return clientInterface.Request(Endpoint, json, config, _abstractService.IsApiKeyRequired, requestOptions);
         }
 
+        public async Task<string> RequestAsync(string json, RequestOptions requestOptions = null)
+        {
+            var clientInterface = _abstractService.Client.HttpClient;
+            var config = _abstractService.Client.Config;
+            return await clientInterface.RequestAsync(Endpoint, json, config,false, requestOptions);
+        }
+
         public string Request(string json, RemoteCertificateValidationCallback remoteCertificateValidationCallback, RequestOptions requestOptions = null)
         {
             var clientInterface = _abstractService.Client.HttpClient;
@@ -30,11 +37,12 @@ namespace Adyen.Service
             return clientInterface.Request(Endpoint, json, config, _abstractService.IsApiKeyRequired, requestOptions, remoteCertificateValidationCallback);
         }
 
-        public Task<string> RequestAsync(string json, RequestOptions requestOptions = null)
+        public async Task<string> RequestAsync(string json, RemoteCertificateValidationCallback remoteCertificateValidationCallback, RequestOptions requestOptions = null)
         {
             var clientInterface = _abstractService.Client.HttpClient;
             var config = _abstractService.Client.Config;
-            return clientInterface.RequestAsync(Endpoint, json, config,false, requestOptions);
+            return await clientInterface.RequestAsync(Endpoint, json, config, _abstractService.IsApiKeyRequired, requestOptions, remoteCertificateValidationCallback);
         }
+        
     }
 }
